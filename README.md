@@ -9,7 +9,6 @@ Bulk - int - generate this many passwords in bulk
 Stats - switch - show a little summary at the end
 
 Note that TargetLength overrules Admin.
-Passwords generated are pipeable
 
 Examples:
 Generate a single 15 character password:
@@ -24,3 +23,6 @@ Generate 3 admin passwords, and show stats:
   8+xQ?xB53YK8U!E.NBk7
   -.61?!6K!mjm9fFs.r5y
   Generated 3 20 character passwords in 0.003 seconds. Current config entropy 120 bits
+
+Generate 10 passwords and pipe into a file
+  PasswordGenerator.ps1 -Bulk 10 | out-file "C:\example\passwords.txt"
