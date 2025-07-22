@@ -17,7 +17,7 @@ if($Bulk){
 } else {
     $PWCountTarget = 1
 }
-$Stats = $true
+
 #Remove lookalikes - I/-l-/1, -0-/-O-/o,
 $Uppers = @('A','B','C','D','E','F','G','H','I','J','K','L','M','N','P','Q','R','S','T','U','V','W','X','Y','Z')
 $Lowers = @('a','b','c','d','e','f','g','h','i','j','k','m','n','o','p','q','r','s','t','u','v','w','x','y','z')
