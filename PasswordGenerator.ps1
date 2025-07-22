@@ -17,7 +17,6 @@ if($Bulk){
 } else {
     $PWCountTarget = 1
 }
-
 #Remove lookalikes - I/-l-/1, -0-/-O-/o,
 $Uppers = @('A','B','C','D','E','F','G','H','I','J','K','L','M','N','P','Q','R','S','T','U','V','W','X','Y','Z')
 $Lowers = @('a','b','c','d','e','f','g','h','i','j','k','m','n','o','p','q','r','s','t','u','v','w','x','y','z')
@@ -34,6 +33,7 @@ function Choose-Random {
 }
 if($Stats){$StartTime = Get-date}
 $PWCount = 0
+write-host ""
 while($PWCount -lt $PWCountTarget){
     $Choices = "" #set character choices at 0
     #Make sure there is at least one of each
@@ -51,15 +51,16 @@ while($PWCount -lt $PWCountTarget){
         } 
     }
     $Password = ($Choices -split '' | Sort-Object {Get-SecureRandom}) -join ''
-    Write-Output "$($PWCount+1) - $Password"
+    Write-Output "$Password"
     $PWCount += 1
 }
 if($Stats){
     $EndTime = Get-Date
-    $TimeTaken = [math]::Round(($EndTime - $StartTime).TotalSeconds,2)
+    $TimeTaken = [math]::Round(($EndTime - $StartTime).TotalSeconds,4)
 }
 if($Stats){
     $TotalChoices = [Math]::Pow(($Uppers.Length + $Lowers.Length + $Numbers.Length + $Symbols.Length),$TargetLength)
     $Entropy = [Math]::Log2($TotalChoices)
 }
-if($Stats){write-host "Generated $PWCountTarget $TargetLength character passwords in $TimeTaken seconds. Current config entropy $Entropy bits"}
+if($Stats){write-host "`nGenerated $PWCountTarget $TargetLength character passwords in $TimeTaken seconds. Current config entropy $Entropy bits"}
+write-host ""
