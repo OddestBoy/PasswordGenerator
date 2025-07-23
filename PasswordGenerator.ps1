@@ -1,27 +1,33 @@
 param (
-    [Parameter()][Int32]$TargetLength,
+    [Parameter()][Int32]$PasswordLength,
     [Parameter()][switch]$Admin,
     [Parameter()][Int32]$Bulk,
     [Parameter()][switch]$Stats
 )
-
-if(!$TargetLength){
+if(!$PasswordLength -or $PasswordLength -lt 5){
     if($Admin){
         $TargetLength = 20
     } else {
         $TargetLength = 10
     }
+} else {
+    $TargetLength = $PasswordLength
 }
+if($PasswordLength -and $PasswordLength -lt 5){
+    Write-Warning "Password lengths below 5 characters are not supported. Defaulting to $TargetLength."
+}
+
 if($Bulk){
     $PWCountTarget = $Bulk
 } else {
     $PWCountTarget = 1
 }
-#Remove lookalikes - I/-l-/1, -0-/-O-/o,
-$Uppers = @('A','B','C','D','E','F','G','H','I','J','K','L','M','N','P','Q','R','S','T','U','V','W','X','Y','Z')
+
+#Remove lookalikes - I/l/1 - removed I/l, 0/O/o - removed O,
+$Uppers = @('A','B','C','D','E','F','G','H','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z')
 $Lowers = @('a','b','c','d','e','f','g','h','i','j','k','m','n','o','p','q','r','s','t','u','v','w','x','y','z')
 $Numbers = @(1,2,3,4,5,6,7,8,9)
-$Symbols = @("!","?",".","+","-")
+$Symbols = @("!","?",".","+","-","%","@")
 
 
 function Choose-Random {
@@ -60,7 +66,7 @@ if($Stats){
 }
 if($Stats){
     $TotalChoices = [Math]::Pow(($Uppers.Length + $Lowers.Length + $Numbers.Length + $Symbols.Length),$TargetLength)
-    $Entropy = [Math]::Log2($TotalChoices)
+    $Entropy = [math]::Round([Math]::Log2($TotalChoices),0)
 }
 if($Stats){write-host "`nGenerated $PWCountTarget $TargetLength character passwords in $TimeTaken seconds. Current config entropy $Entropy bits"}
 write-host ""
