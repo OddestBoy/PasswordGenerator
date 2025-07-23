@@ -4,6 +4,7 @@ param (
     [Parameter()][Int32]$Bulk,
     [Parameter()][switch]$Stats
 )
+
 if(!$PasswordLength -or $PasswordLength -lt 5){
     if($Admin){
         $TargetLength = 20
@@ -34,7 +35,7 @@ function Choose-Random {
     param(
     [Parameter()][array]$Set
     )
-    $Selection = Get-SecureRandom -Maximum ($Set.Length + 1)
+    $Selection = get-random -Maximum ($Set.Length + 1)
     return $Set[$Selection]
 }
 if($Stats){$StartTime = Get-date}
@@ -49,14 +50,14 @@ while($PWCount -lt $PWCountTarget){
     $Choices = $Choices + (Choose-Random -Set $Symbols)
     #Fill up to target length with a mix of characters
     while($Choices.Length -lt $TargetLength){
-        switch (Get-SecureRandom -Maximum 4){
+        switch (get-random -Maximum 4){
             0 {$Choices = $Choices + (Choose-Random -Set $Uppers)}
             1 {$Choices = $Choices + (Choose-Random -Set $Lowers)}
             2 {$Choices = $Choices + (Choose-Random -Set $Numbers)}
             3 {$Choices = $Choices + (Choose-Random -Set $Symbols)}
         } 
     }
-    $Password = ($Choices -split '' | Sort-Object {Get-SecureRandom}) -join ''
+    $Password = ($Choices -split '' | Sort-Object {get-random}) -join ''
     Write-Output "$Password"
     $PWCount += 1
 }
