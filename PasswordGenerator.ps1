@@ -2,9 +2,21 @@ param (
     [Parameter()][Int32]$PasswordLength,
     [Parameter()][switch]$Admin,
     [Parameter()][Int32]$Bulk,
-    [Parameter()][switch]$Stats
+    [Parameter()][switch]$Stats,
+    [Parameter()][switch]$CSV
 )
+$ErrorActionPreference = "stop"
+if($CSV){
+    $Folder = $PSScriptRoot
+    try {
+        Write-Output "Count,Password" | Out-File "$Folder\GeneratedPasswords.csv"
+    }
+    catch {
+        Write-Host "Error writing to file $Folder\GeneratedPasswords.csv - $($PSItem.Exception.Message)"
+        exit
+    }
 
+}
 if(!$PasswordLength -or $PasswordLength -lt 5){
     if($Admin){
         $TargetLength = 20
@@ -24,14 +36,14 @@ if($Bulk){
     $PWCountTarget = 1
 }
 
-#Remove lookalikes - I/l/1 - removed I/l, 0/O/o - removed O,
+#Remove lookalikes - I/l/1 - removed I/l, 0/O/o - removed O
 $Uppers = @('A','B','C','D','E','F','G','H','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z')
 $Lowers = @('a','b','c','d','e','f','g','h','i','j','k','m','n','o','p','q','r','s','t','u','v','w','x','y','z')
 $Numbers = @(1,2,3,4,5,6,7,8,9)
 $Symbols = @("!","?",".","+","-","%","@")
 
 
-function Choose-Random {
+function Choose-Random { #function to pick a random character from the choosen set
     param(
     [Parameter()][array]$Set
     )
@@ -50,16 +62,19 @@ while($PWCount -lt $PWCountTarget){
     $Choices = $Choices + (Choose-Random -Set $Symbols)
     #Fill up to target length with a mix of characters
     while($Choices.Length -lt $TargetLength){
-        switch (get-random -Maximum 4){
+        switch (get-random -Maximum 4){ #pick number 0-3 to choose a character type
             0 {$Choices = $Choices + (Choose-Random -Set $Uppers)}
             1 {$Choices = $Choices + (Choose-Random -Set $Lowers)}
             2 {$Choices = $Choices + (Choose-Random -Set $Numbers)}
             3 {$Choices = $Choices + (Choose-Random -Set $Symbols)}
         } 
     }
-    $Password = ($Choices -split '' | Sort-Object {get-random}) -join ''
+    $Password = ($Choices -split '' | Sort-Object {get-random}) -join '' #Shuffle selected characters
     Write-Output "$Password"
     $PWCount += 1
+    if($CSV){
+        Write-Output "$PWCount,$Password" | Out-File "$Folder\GeneratedPasswords.csv" -Append
+    }
 }
 if($Stats){
     $EndTime = Get-Date
@@ -67,7 +82,9 @@ if($Stats){
 }
 if($Stats){
     $TotalChoices = [Math]::Pow(($Uppers.Length + $Lowers.Length + $Numbers.Length + $Symbols.Length),$TargetLength)
-    $Entropy = [math]::Round([Math]::Log2($TotalChoices),0)
+    $Entropy = [math]::Round([Math]::Log2($TotalChoices),0) #password entropy is Log2(C^L) C is choices, L is length. 60+ is good
 }
-if($Stats){write-host "`nGenerated $PWCountTarget $TargetLength character passwords in $TimeTaken seconds. Current config entropy $Entropy bits"}
+write-host ""
+if($Stats){write-host "Generated $PWCountTarget $TargetLength character passwords in $TimeTaken seconds. Current config entropy $Entropy bits"}
+if($CSV){Write-Host "Generated passwords output to $Folder\GeneratedPasswords.csv"}
 write-host ""
