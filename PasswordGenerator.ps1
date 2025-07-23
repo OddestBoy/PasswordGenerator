@@ -41,7 +41,7 @@ $Uppers = @('A','B','C','D','E','F','G','H','J','K','L','M','N','O','P','Q','R',
 $Lowers = @('a','b','c','d','e','f','g','h','i','j','k','m','n','o','p','q','r','s','t','u','v','w','x','y','z')
 $Numbers = @(1,2,3,4,5,6,7,8,9)
 $Symbols = @("!","?",".","+","-","%","@")
-
+$Combined = $Symbols + $Numbers + $Lowers + $Uppers
 
 function Choose-Random { #function to pick a random character from the choosen set
     param(
@@ -62,12 +62,7 @@ while($PWCount -lt $PWCountTarget){
     $Choices = $Choices + (Choose-Random -Set $Symbols)
     #Fill up to target length with a mix of characters
     while($Choices.Length -lt $TargetLength){
-        switch (get-random -Maximum 4){ #pick number 0-3 to choose a character type
-            0 {$Choices = $Choices + (Choose-Random -Set $Uppers)}
-            1 {$Choices = $Choices + (Choose-Random -Set $Lowers)}
-            2 {$Choices = $Choices + (Choose-Random -Set $Numbers)}
-            3 {$Choices = $Choices + (Choose-Random -Set $Symbols)}
-        } 
+        $Choices = $Choices + (Choose-Random -Set $Combined)
     }
     $Password = ($Choices -split '' | Sort-Object {get-random}) -join '' #Shuffle selected characters
     Write-Output "$Password"
