@@ -7,8 +7,9 @@ PasswordLength - int - how long the password should be (minimum 5).
 Admin - switch - generates a longer (20 character) password for admin accounts
 Bulk - int - generate this many passwords in bulk
 Stats - switch - show a little summary at the end
+CSV - switch - output the passwords to a CSV in the same folder as the script. Note the passwords can be piped
 
-Note that TargetLength overrules Admin.
+Note that a specified PasswordLength overrules Admin.
 
 Examples:
 Generate a single 15 character password:
@@ -24,5 +25,5 @@ Generate 3 admin passwords, and show stats:
   -.61?!6K!mjm9fFs.r5y
   Generated 3 20 character passwords in 0.003 seconds. Current config entropy 120 bits
 
-Generate 10 passwords and pipe into a file
+Generate 10 passwords and pipe into a txt file
   PasswordGenerator.ps1 -Bulk 10 | out-file "C:\example\passwords.txt"
